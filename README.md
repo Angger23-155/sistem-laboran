@@ -1,66 +1,172 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🧪 Sistem Informasi Manajemen Laboran (TIF LAB)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi manajemen tugas laboran dan pelaporan berbasis web yang terintegrasi dengan **WhatsApp Gateway (WAHA - WhatsApp HTTP API)** untuk mengirimkan notifikasi penugasan, deadline, approval, dan laporan secara *real-time*.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📋 Prasyarat Sistem (Prerequisites)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Sebelum menjalankan aplikasi, pastikan perangkat atau server telah terpasang:
+- **PHP** >= 8.2 (dengan ekstensi: `pdo_mysql`, `curl`, `mbstring`, `fileinfo`)
+- **Composer** (v2.x)
+- **Node.js** (v18.x / v20.x) & **NPM**
+- **MySQL / MariaDB** (melalui Laragon / XAMPP / MySQL Server bawaan)
+- **Docker Desktop** (untuk menjalankan gateway WhatsApp WAHA)
+- **Git**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🚀 Langkah Instalasi & Konfigurasi
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Ikuti langkah-langkah di bawah ini secara berurutan:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 1. Clone Repository
+```bash
+git clone https://github.com/USERNAME/sistem-laboran.git
+cd sistem-laboran
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Install Dependensi PHP & JavaScript
+```bash
+# Install paket backend Laravel
+composer install
 
-## Laravel Sponsors
+# Install dependensi frontend
+npm install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 3. Konfigurasi File Environment (`.env`)
+Salin file template `.env.example` menjadi `.env`:
+```bash
+cp .env.example .env
+```
+*(Di Windows Command Prompt bisa gunakan: `copy .env.example .env`)*
 
-### Premium Partners
+Buka file `.env` dan sesuaikan konfigurasi database Anda:
+```env
+APP_NAME="Sistem Laboran"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+APP_SYSTEM_URL=http://127.0.0.1:8000
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sistem_laboran
+DB_USERNAME=root
+DB_PASSWORD=
+```
 
-## Contributing
+Generate application key Laravel:
+```bash
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 4. Setup Database
+1. Buat database baru di MySQL dengan nama `sistem_laboran`.
+2. Import file SQL yang sudah disediakan di root project (`db_sistem_laboran.sql`) ke database `sistem_laboran` melalui phpMyAdmin / HeidiSQL / terminal:
+   ```bash
+   mysql -u root -p sistem_laboran < db_sistem_laboran.sql
+   ```
+*(Atau jika ingin menggunakan migrasi bawaan: `php artisan migrate`)*
 
-## Code of Conduct
+### 5. Setup Storage Link
+Buat symlink folder storage agar bukti laporan/foto dapat diakses publik:
+```bash
+php artisan storage:link
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 📱 Konfigurasi Gateway WhatsApp (WAHA)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Aplikasi ini menggunakan Docker untuk menjalankan **WAHA (WhatsApp HTTP API)** sebagai pengirim pesan WhatsApp otomatis.
 
-## License
+### 1. Jalankan Container WAHA
+Di direktori project, jalankan:
+```bash
+docker compose up -d
+```
+Container akan berjalan pada port `3000`.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 2. Buka Dashboard WAHA
+Akses dashboard WAHA melalui browser:
+- **URL Dashboard:** `http://localhost:3000/dashboard/`
+- **Username:** `admin`
+- **Password:** `admin`
+
+### 3. Hubungkan WhatsApp (Scan QR)
+1. Di halaman dashboard WAHA, pastikan ada worker/session dengan nama `default` (sesuai setting `WAHA_SESSION=default` di `.env`).
+2. Klik tombol **Start** pada session `default`.
+3. Klik ikon QR Code dan **scan menggunakan WhatsApp di HP** Anda (melalui menu *Perangkat Tertaut* / *Linked Devices*).
+4. Pastikan status session berubah menjadi **WORKING: 1** (Warna Hijau).
+
+### 4. Ambil API Key & Masukkan ke `.env`
+1. Di dashboard WAHA, lihat menu/ikon **API Key** pada worker.
+2. Salin API Key tersebut, lalu masukkan ke dalam file `.env`:
+   ```env
+   WAHA_URL=http://localhost:3000
+   WAHA_API_KEY=masukkan_api_key_waha_disini
+   WAHA_SESSION=default
+   ```
+3. Jika sebelumnya config pernah di-cache, jalankan:
+   ```bash
+   php artisan config:clear
+   ```
+
+---
+
+## 💻 Menjalankan Aplikasi
+
+Buka 2 jendela terminal:
+
+**Terminal 1 — Build Frontend Assets:**
+```bash
+npm run build
+# Atau untuk mode development:
+# npm run dev
+```
+
+**Terminal 2 — Jalankan Server Laravel:**
+```bash
+php artisan serve
+```
+
+Aplikasi sekarang dapat diakses di browser pada:  
+👉 **`http://127.0.0.1:8000`**
+
+---
+
+## ⏰ Cron Job / Pengecekan Deadline Otomatis
+
+Aplikasi memiliki perintah CLI untuk memeriksa tugas yang mendekati deadline (5 jam sebelum) dan tugas yang terlambat:
+
+```bash
+php artisan tugas:cek-deadline
+```
+
+Untuk otomasi di server produksi (Linux), tambahkan cron job berikut (`crontab -e`):
+```bash
+* * * * * cd /path-ke-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+---
+
+## ⚠️ Catatan Penting & Troubleshooting
+
+1. **Format Nomor WhatsApp Pengguna:**  
+   Pastikan nomor WhatsApp pengguna diisi dengan awalan nomor standar Indonesia (`08xxxxxxxx` atau `+628xxxxxxxx`). Sistem secara otomatis akan memformatnya menjadi format internasional `628xxxx@c.us`.
+2. **Jangan Jalankan `php artisan config:cache` di Mode Development:**  
+   Jika mengubah nilai di `.env`, Anda tidak perlu me-restart server secara manual selama tidak menjalankan `config:cache`. Jika ada konfigurasi baru yang tidak terbaca, cukup jalankan `php artisan config:clear`.
+3. **Session WhatsApp Terputus / Status Error:**  
+   Jika WhatsApp di HP keluar atau error `getChat`:
+   - Buka `http://localhost:3000/dashboard/`
+   - Klik tombol **Stop** pada session `default`, lalu klik **Start** kembali dan scan ulang QR code.
+   - Atau perbarui image WAHA: `docker compose pull && docker compose up -d`.
+
+---
+
+## 📄 Lisensi
+Sistem Laboran dikembangkan untuk kebutuhan operasional laboratorium teknik informatika.
